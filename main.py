@@ -46,6 +46,9 @@ async def reset_conversation():
 @app.post("/post-text/")
 async def post_text(request: Request, text: str = Form(...)):
     logging.info(f"Received request: {request.method} {request.url}")
+    if request.method != "POST":
+        raise HTTPException(status_code=405, detail="Method Not Allowed")
+
     logging.info(f"Form data: {text}")
     try:
         chat_response = get_chat_response(text)
