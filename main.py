@@ -52,19 +52,15 @@ async def post_text(request: Request, text: str = Form(...)):
 
     logging.info(f"Form data: {text}")
     try:
-        # Debug logs for environment variables
-        logging.debug(f"OpenAI Org: {openai.organization}")
-        logging.debug(f"OpenAI Key: {openai.api_key}")
-
-        # Temporarily bypass OpenAI API and storage to isolate the issue
-        # chat_response = get_chat_response(text)
-        chat_response = "This is a temporary response for debugging."
+        # Get the chat response using the OpenAI API
+        chat_response = get_chat_response(text)
 
         if not chat_response:
             raise HTTPException(status_code=400, detail="Failed chat response")
         
-        # store_messages(text, chat_response)
-        logging.info("Message would be stored here.")
+        # Store the messages
+        store_messages(text, chat_response)
+        logging.info("Message stored successfully.")
         return {"response": chat_response}
     except Exception as e:
         logging.error(f"Error in post_text: {e}", exc_info=True)
