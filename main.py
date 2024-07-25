@@ -59,4 +59,4 @@ async def post_text(request: Request, text: str = Form(...)):
         return {"response": chat_response}
     except Exception as e:
         logging.error(f"Error in post_text: {e}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail=str(e))  # Return the actual error message for debugging
