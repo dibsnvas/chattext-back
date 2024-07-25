@@ -1,18 +1,18 @@
+# openai_requests.py
 import openai
-from functions.database import get_recent_messages
+import logging
 
-def get_chat_response(message_input):
-    messages = get_recent_messages()
-    user_message = {"role": "user", "content": message_input}
-    messages.append(user_message)
-
+def get_chat_response(user_input):
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=messages
+            model="gpt-3.5-turbo",  # Use the correct model name
+            messages=[
+                {"role": "system", "content": "Ты помогаешь детям с ограниченными возможностями психологически и тебя зовут Алма. Твои ответы должны быть меньше чем 200 слов. Если ребенок просит рассказать сказку, она должна быть во всех красках. Также помогай с домашними заданиями и рассказывай исторические факты."},
+                {"role": "user", "content": user_input},
+            ]
         )
-        message_text = response["choices"][0]["message"]["content"]
-        return message_text
+        logging.info(f"OpenAI response: {response}")
+        return response['choices'][0]['message']['content']
     except Exception as e:
-        print(f"Error in get_chat_response: {e}")
+        logging.error(f"Error in get_chat_response: {e}", exc_info=True)
         return None

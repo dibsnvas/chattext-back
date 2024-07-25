@@ -1,11 +1,12 @@
+# main.py
 from fastapi import FastAPI, HTTPException, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from decouple import config
 import openai
 import logging
 
-from functions.openai_requests import get_chat_response
-from functions.database import store_messages, reset_messages
+from functions.openai_requests import get_chat_response  # Update if needed
+from functions.database import store_messages, reset_messages  # Update if needed
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
