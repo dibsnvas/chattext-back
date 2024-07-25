@@ -20,6 +20,7 @@ origins = [
     "http://localhost:5174",
     "http://localhost:4173",
     "http://localhost:3000",
+    "https://chatbotfront-neon.vercel.app",  # Add your deployed frontend URL here
 ]
 
 app.add_middleware(
