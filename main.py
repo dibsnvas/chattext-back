@@ -1,10 +1,14 @@
-from fastapi import FastAPI, HTTPException, Form
+from fastapi import FastAPI, HTTPException, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from decouple import config
 import openai
+import logging
 
 from functions.openai_requests import get_chat_response
 from functions.database import store_messages, reset_messages
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
 
 openai.organization = config("OPEN_AI_ORG")
 openai.api_key = config("OPEN_AI_KEY")
@@ -40,7 +44,9 @@ async def reset_conversation():
     return {"response": "conversation reset"}
 
 @app.post("/post-text/")
-async def post_text(text: str = Form(...)):
+async def post_text(request: Request, text: str = Form(...)):
+    logging.info(f"Received request: {request.method} {request.url}")
+    logging.info(f"Form data: {text}")
     try:
         chat_response = get_chat_response(text)
         if not chat_response:
@@ -49,5 +55,5 @@ async def post_text(text: str = Form(...)):
         store_messages(text, chat_response)
         return {"response": chat_response}
     except Exception as e:
-        print(f"Error in post_text: {e}")
+        logging.error(f"Error in post_text: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
