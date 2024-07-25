@@ -5,8 +5,8 @@ from decouple import config
 import openai
 import logging
 
-from functions.openai_requests import get_chat_response  # Update if needed
-from functions.database import store_messages, reset_messages  # Update if needed
+from functions.openai_requests import get_chat_response
+from functions.database import store_messages, reset_messages
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
