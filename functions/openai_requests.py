@@ -15,7 +15,7 @@ def get_chat_response(message_input):
             return response
 
         response = chat_gpt(messages)
-        message_text = response["choices"][0]["message"]["content"]
+        message_text = response.choices[0].message.content
         return message_text
     except Exception as e:
         print(f"Error in get_chat_response: {e}")
