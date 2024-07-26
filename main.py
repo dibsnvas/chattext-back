@@ -1,10 +1,13 @@
+import os
+import json
+import random
 from fastapi import FastAPI, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from decouple import config
 import openai
 
 from functions.openai_requests import get_chat_response
-from functions.database import store_messages, reset_messages
+from functions.database import store_messages, reset_messages, get_recent_messages
 
 openai.organization = config("OPEN_AI_ORG")
 openai.api_key = config("OPEN_AI_KEY")
@@ -44,16 +47,14 @@ async def reset_conversation():
 @app.post("/post-text/")
 async def post_text(text: str = Form(...)):
     try:
-        print(f"Received text: {text}")
         chat_response = get_chat_response(text)
+
         if not chat_response:
-            raise HTTPException(status_code=400, detail="Failed chat response")
-        
+            raise HTTPException(status_code=503, detail="ChatGPT service unavailable")  # More appropriate status code
+
         store_messages(text, chat_response)
         return {"response": chat_response}
-    except HTTPException as e:
-        print(f"HTTP Exception in post_text: {e.detail}")
-        raise e
+    except openai.error.APIError as e:
+        raise HTTPException(status_code=503, detail=f"OpenAI API error: {e}")
     except Exception as e:
-        print(f"Exception in post_text: {e}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
