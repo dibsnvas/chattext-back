@@ -16,7 +16,7 @@ origins = [
     "http://localhost:5174",
     "http://localhost:4173",
     "http://localhost:3000",
-    "https://chatbotfront-neon.vercel.app/",
+    "https://chattext-back.onrender.com"  # Add your deployed frontend origin
 ]
 
 app.add_middleware(
@@ -26,7 +26,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.get("/")
 async def read_root():
