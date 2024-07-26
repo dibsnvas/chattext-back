@@ -16,7 +16,8 @@ origins = [
     "http://localhost:5174",
     "http://localhost:4173",
     "http://localhost:3000",
-    "https://chattext-back.onrender.com"  # Add your deployed frontend origin
+    "https://chatbotfront-neon.vercel.app",
+    "https://chatbotfront-bhss.vercel.app",
 ]
 
 app.add_middleware(
@@ -42,15 +43,13 @@ async def reset_conversation():
 
 @app.post("/post-text/")
 async def post_text(text: str = Form(...)):
-    print(f"Received text: {text}")
-    
-    chat_response = get_chat_response(text)
-    print(f"Chat response: {chat_response}")
-
-    if chat_response is None:
-        print("Chat response is None")
-        raise HTTPException(status_code=400, detail="Failed chat response")
-
-    store_messages(text, chat_response)
-
-    return {"response": chat_response}
+    try:
+        chat_response = get_chat_response(text)
+        if not chat_response:
+            raise HTTPException(status_code=400, detail="Failed chat response")
+        
+        store_messages(text, chat_response)
+        return {"response": chat_response}
+    except Exception as e:
+        print(f"Error in post_text: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
