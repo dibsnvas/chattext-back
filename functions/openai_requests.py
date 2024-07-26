@@ -8,11 +8,13 @@ def get_chat_response(message_input):
 
     try:
         def chat_gpt(prompt):
-            response = client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=messages
-    )
+            )
+            return response
 
+        response = chat_gpt(messages)
         message_text = response["choices"][0]["message"]["content"]
         return message_text
     except Exception as e:
