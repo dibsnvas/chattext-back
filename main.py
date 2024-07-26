@@ -1,15 +1,10 @@
-# main.py
-from fastapi import FastAPI, HTTPException, Form, Request
+from fastapi import FastAPI, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from decouple import config
 import openai
-import logging
 
 from functions.openai_requests import get_chat_response
 from functions.database import store_messages, reset_messages
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
 
 openai.organization = config("OPEN_AI_ORG")
 openai.api_key = config("OPEN_AI_KEY")
@@ -21,7 +16,6 @@ origins = [
     "http://localhost:5174",
     "http://localhost:4173",
     "http://localhost:3000",
-    "https://chatbotfront-neon.vercel.app",  # Add your deployed frontend URL here
 ]
 
 app.add_middleware(
@@ -46,23 +40,12 @@ async def reset_conversation():
     return {"response": "conversation reset"}
 
 @app.post("/post-text/")
-async def post_text(request: Request, text: str = Form(...)):
-    logging.info(f"Received request: {request.method} {request.url}")
-    if request.method != "POST":
-        raise HTTPException(status_code=405, detail="Method Not Allowed")
+async def post_text(text: str = Form(...)):
+    chat_response = get_chat_response(text)
 
-    logging.info(f"Form data: {text}")
-    try:
-        # Get the chat response using the OpenAI API
-        chat_response = get_chat_response(text)
+    store_messages(text, chat_response)
+    print(chat_response)
+    if not chat_response:
+        raise HTTPException(status_code=400, detail="Failed chat response")
 
-        if not chat_response:
-            raise HTTPException(status_code=400, detail="Failed chat response")
-        
-        # Store the messages
-        store_messages(text, chat_response)
-        logging.info("Message stored successfully.")
-        return {"response": chat_response}
-    except Exception as e:
-        logging.error(f"Error in post_text: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+    return {"response": chat_response}
