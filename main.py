@@ -41,11 +41,15 @@ async def reset_conversation():
 
 @app.post("/post-text/")
 async def post_text(text: str = Form(...)):
+    print(f"Received text: {text}")
+    
     chat_response = get_chat_response(text)
+    print(f"Chat response: {chat_response}")
+
+    if chat_response is None:
+        print("Chat response is None")
+        raise HTTPException(status_code=400, detail="Failed chat response")
 
     store_messages(text, chat_response)
-    print(chat_response)
-    if not chat_response:
-        raise HTTPException(status_code=400, detail="Failed chat response")
 
     return {"response": chat_response}
