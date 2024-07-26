@@ -8,7 +8,7 @@ def get_chat_response(message_input):
 
     try:
         def chat_gpt(prompt):
-            response = openai.ChatCompletion.create(
+            response = openai.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=messages
             )
