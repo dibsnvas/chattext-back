@@ -54,7 +54,7 @@ async def post_text(text: str = Form(...)):
 
         store_messages(text, chat_response)
         return {"response": chat_response}
-    except openai.error.APIError as e:
+    except openai.APIError as e: 
         raise HTTPException(status_code=503, detail=f"OpenAI API error: {e}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
